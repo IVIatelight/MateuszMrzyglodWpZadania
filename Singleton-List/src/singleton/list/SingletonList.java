@@ -5,7 +5,7 @@ package singleton.list;
 public class SingletonList {
 
     public static void main(String[] args) {
-         
+        
         NameList lista = NameList.getInstance();
         
         lista.dodaj("Ola");
@@ -23,7 +23,6 @@ public class SingletonList {
         lista.usun();
         lista.wyswietl();
         
-         
     }
     
 }
