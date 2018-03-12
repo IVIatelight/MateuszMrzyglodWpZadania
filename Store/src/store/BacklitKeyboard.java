@@ -1,4 +1,4 @@
-
+//Autor Mateusz Mrzygłód PGK1 Wp
 package store;
 
 public class BacklitKeyboard extends LaptopComponents{
@@ -11,10 +11,12 @@ public class BacklitKeyboard extends LaptopComponents{
         this.price = price;
     }
     
+    @Override
     protected double getComponentPrice(double price){
         return price;
     }
     
+    @Override
     protected String getComponentInfo(String name){
         return "\t "+"Klawiatura podswietlana: " + type;
     }

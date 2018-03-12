@@ -1,4 +1,4 @@
-
+//Autor Mateusz Mrzygłód PGK1 Wp
 package store;
 
 public class ExternalGraphicsCard extends LaptopComponents{
@@ -11,10 +11,12 @@ public class ExternalGraphicsCard extends LaptopComponents{
         this.nameOfGPU = nameOfGPU;
         this.priceOfGPU = priceOfGPU;
     }
+    @Override
     protected double getComponentPrice(double price){
         return priceOfGPU;
     }
     
+    @Override
     protected String getComponentInfo(String name){
         return "\t "+"Karta graficzna: " + nameOfGPU;
     }

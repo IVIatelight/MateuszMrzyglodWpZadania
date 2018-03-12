@@ -1,30 +1,24 @@
-//Autor Mateusz Mrzygłód
+//Autor Mateusz Mrzygłód PGK1 Wp
 package store;
 
 public class Store {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) {        
+
+        LaptopInterface laptop1 = new Laptop("Bugatti C6", 3000);
+        laptop1 = new ExternalGraphicsCard(laptop1, "AMD 580", 1300);
+        System.out.println(laptop1.about());
+        System.out.println("Cena: " + laptop1.getPrice());
+        System.out.println(" ");
         
-        Laptop laptop1 = new Laptop("Bugatti C6", 3000);        
-        ExternalGraphicsCard laptopZGPU = new ExternalGraphicsCard(laptop1, "AMD 580", 1300);
-        
-        System.out.println(laptopZGPU.about());
-        System.out.println("Cena: " + laptopZGPU.getPrice());
-        
-        
-        Laptop laptop2 = new Laptop("Pavarotti L7", 2500);        
-        BacklitKeyboard laptopZSwiecacaKlawiatura = new BacklitKeyboard(laptop2, "LED All Color", 100);        
-        
-        System.out.println(laptopZSwiecacaKlawiatura.about());
-        System.out.println("Cena: " + laptopZSwiecacaKlawiatura.getPrice());
-        
-        
-        Laptop laptop3 = new Laptop("Vivaldi 4S", 2500);
-        ExternalGraphicsCard laptopZGPU2 = new ExternalGraphicsCard(laptop3, "GTX 1080 Ti", 5300);        
-        BacklitKeyboard superLaptop = new BacklitKeyboard(laptopZGPU2, "LED Nasty red", 300);
-        
-        System.out.println(superLaptop.about());
-        System.out.println("Cena: " + superLaptop.getPrice());
+        LaptopInterface laptop3 = new Laptop("Vivaldi 4S", 2500);
+        laptop3 = new DisplayForGaming(laptop3, 120, "VSYNC", 250);
+        laptop3 = new ExternalGraphicsCard(laptop3, "Nvidia GTX 1080 Ti", 5300);
+        laptop3 = new ExternalGraphicsCard(laptop3, "AMD Radeon RX 580", 5300); 
+        laptop3 = new BacklitKeyboard(laptop3, "LED Nasty red", 300);        
+        laptop3 = new OledDisplay(laptop3, 200);
+        System.out.println(laptop3.about());
+        System.out.println("Cena: " + laptop3.getPrice());        
     }
     
 }
