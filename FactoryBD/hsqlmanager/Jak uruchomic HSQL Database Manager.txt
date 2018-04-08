@@ -1,0 +1,11 @@
+Opis zewnêtrznego programu do zarz¹dzania baz¹ dachych HSQL
+
+Jak uruchomiæ
+1) Uruchom runManagerSwing.bat
+2) Type zmieñ na HSQL Database Engine Standalone
+3) Zmieñ URL na jdbc:hsqldb:file:factory.db
+4) Zatwierdz dane
+
+Program info
+Po lewej stronie jest zak³adka z zawartoœci¹ bazy danych
+W polu tekstowym mo¿na napisaæ zapytanie i wywo³aæ przyciskiem "Execute SQL"
