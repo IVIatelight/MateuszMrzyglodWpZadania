@@ -25,10 +25,17 @@ public class GUI_database {
 	private String[][] dataSortedAsc;
 	private String[] columnHeaders;
 	private JTable table;
+	JButton btnUndo = new JButton("Undo");
 	
 	DatabaseFactory databaseFactory = new DatabaseFactory();
     DatabaseInterface database = databaseFactory.getDatabase("USERS");
-	
+	String currentTable = "USERS";
+    
+    Originator originator = new Originator();
+    Caretaker caretaker = new Caretaker();
+    private int updateCounter = 0;
+    
+    
 	public static String[] tableColumnHeaders() {
 		
 		String[] userColumnHeaders = {"Id","Name", "Description"};
@@ -37,20 +44,32 @@ public class GUI_database {
 	
 	public void selectTable(String tableName)
 	{
-        database = databaseFactory.getDatabase(tableName);
+        currentTable = tableName;
+		database = databaseFactory.getDatabase(tableName);
 	}
 	
-	public void addItem(String name)
+	public void updateTable()
 	{
-		database.addItem(name);
 		getTable();
 		model.setDataVector(dataNoSorted, columnHeaders);
 		table.setModel(model);
 		table.repaint();
+		setColumnWidth();
+	}
+	
+	public void addItem(String name)
+	{		
+		updateCounter++;
+		database.addItem(name);
+		updateTable();
 		addframe.setVisible(false);
-		table.getColumnModel().getColumn(0).setPreferredWidth(47);
-		table.getColumnModel().getColumn(1).setPreferredWidth(99);
-		table.getColumnModel().getColumn(2).setPreferredWidth(109);		
+		int n = dataNoSorted.length - 1;
+		String id = dataNoSorted[n][0];
+		System.out.println("Id: " + id);
+		String[] line = {id, name, "", "add", currentTable};
+		originator.setState(line);
+		caretaker.addMemento(originator.save());
+		btnUndo.setText("Undo (" + updateCounter + ")");
 	}
 	public void noAddItem()
 	{
@@ -108,10 +127,11 @@ public class GUI_database {
 		JButton btnDel = new JButton("Del");
 		JButton btnGet = new JButton("Get");
 		JButton btnSort = new JButton("Sort");
+		//JButton btnUndo = new JButton("Undo");
 		
 		JScrollPane scrollPane = new JScrollPane();
-		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());		
 		
+		///////////////////////-----INICJALIZACJA-TABELI-----///////////////////////
 		
 		getTable();
 		model = new DefaultTableModel(dataNoSorted, columnHeaders);
@@ -120,7 +140,7 @@ public class GUI_database {
 		scrollPane.setViewportView(table);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setEnabled(true);
-		setColumnWidth();
+		setColumnWidth();		
 		
 		///////////////////////-----OBS£UGA-PRZYCISKÓW-----///////////////////////
 		
@@ -132,17 +152,26 @@ public class GUI_database {
 		
 		btnDel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+				updateCounter++;
 				int i = table.getSelectedRow();
 				if(i>= 0)
 				{
 					String idItem = (String) model.getValueAt(i, 0);
+					String nameItem = (String) model.getValueAt(i, 1);
+					String descriptionItem = (String) model.getValueAt(i, 2);
+					
 					database.deleteItem(idItem);
 					model.removeRow(i);
 					table.setModel(model);
 					table.repaint();
 					setColumnWidth();
 					getTable();
+					
+					String[] line = {idItem, nameItem, descriptionItem, "del", currentTable};
+					originator.setState(line);
+					caretaker.addMemento(originator.save());
+					
+					btnUndo.setText("Undo (" + updateCounter + ")");
 				}				
 			}
 		});		
@@ -169,25 +198,44 @@ public class GUI_database {
 				table.repaint();
 				setColumnWidth();				
 			}
-		});		
+		});
 		
-		///////////////////////-----ROZMIESZCZENIE-ELEMENTÓW-----///////////////////////
+		btnUndo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(updateCounter>0) {
+					originator.getStageFromMemento(caretaker.getMemento());
+					String[] stage = originator.getStage();
+					selectTable(stage[4]);
+					String[] line = {stage[0], stage[1], stage[2]};
+					String operation = stage[3];
+					database.restoreOldVersion(line, operation);				
+					updateTable();
+					updateCounter--;
+					btnUndo.setText("Undo (" + updateCounter + ")");
+				}				
+			}
+		});
 		
+///////////////////////-----UMIEJSCOWIENIE-ELEMENTOW-----///////////////////////
+		
+		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());		
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 292, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-									.addComponent(btnAdd, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									.addComponent(comboBox, Alignment.TRAILING, 0, 116, Short.MAX_VALUE))
-								.addComponent(btnDel, GroupLayout.PREFERRED_SIZE, 116, GroupLayout.PREFERRED_SIZE))
-							.addComponent(btnGet, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 116, GroupLayout.PREFERRED_SIZE))
-						.addComponent(btnSort, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 116, GroupLayout.PREFERRED_SIZE))
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+										.addComponent(btnAdd, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addComponent(comboBox, Alignment.TRAILING, 0, 116, Short.MAX_VALUE))
+									.addComponent(btnDel, GroupLayout.PREFERRED_SIZE, 116, GroupLayout.PREFERRED_SIZE))
+								.addComponent(btnGet, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 116, GroupLayout.PREFERRED_SIZE))
+							.addComponent(btnSort, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 116, GroupLayout.PREFERRED_SIZE))
+						.addComponent(btnUndo, GroupLayout.PREFERRED_SIZE, 116, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
@@ -204,7 +252,9 @@ public class GUI_database {
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(btnGet)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnSort))
+							.addComponent(btnSort)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnUndo))
 						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 243, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);

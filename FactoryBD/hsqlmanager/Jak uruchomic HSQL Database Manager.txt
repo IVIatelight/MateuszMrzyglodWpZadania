@@ -1,4 +1,4 @@
-Opis zewnêtrznego programu do zarz¹dzania baz¹ dachych HSQL
+Opis zewnêtrznego programu do zarz¹dzania baz¹ danych HSQL
 
 Jak uruchomiæ
 1) Uruchom runManagerSwing.bat

@@ -5,51 +5,26 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class Products implements DatabaseInterface {
+class Products implements DatabaseInterface {
 
 	private String tableName = "PRODUCTS";
 	
 	@Override
-	public int usersCount(){
-		
-		int numberOfUsers = 0;
-		try {
-			Class.forName("org.hsqldb.jdbcDriver");
-			
-			Connection connection = DriverManager.getConnection("jdbc:hsqldb:file:data/factory.db", "sa", "");
-			
-			Statement statement = connection.createStatement();
-			ResultSet resultSet = statement.executeQuery("SELECT COUNT(*) AS COUNT FROM " + tableName);
-			
-			while( resultSet.next() ) {
-				numberOfUsers = resultSet.getInt(1);
-			}
-					
-			statement.execute( "SHUTDOWN" );
-			statement.close();
-			connection.close();
-			
-		} catch (ClassNotFoundException e) {
-			System.out.println("Wyst¹pi³ nastepuj¹cy b³¹d z baza danych: ");
-			e.printStackTrace();
-		} catch (SQLException e) {
-			System.out.println("Wyst¹pi³ nastepuj¹cy b³¹d z zapytaniem SQL: ");
-			e.printStackTrace();
-		}
-		
-		return numberOfUsers;
-	}
-
-	@Override
 	public String[][] sortedList(int order)
 	{
-		int usersCount = usersCount();
-		String[][] usersList = new String[usersCount][3];
-		
+		String[][] usersList = {};
 		try {
 			Class.forName("org.hsqldb.jdbcDriver");
 			
 			Connection connection = DriverManager.getConnection("jdbc:hsqldb:file:data/factory.db", "sa", "");
+			
+			Statement statement1 = connection.createStatement();
+			ResultSet resultSet1 = statement1.executeQuery("SELECT COUNT(*) AS COUNT FROM " + tableName);
+			int numberOfUsers = 0;
+			while( resultSet1.next() ) {
+				numberOfUsers = resultSet1.getInt(1);
+			}
+			usersList = new String[numberOfUsers][3];
 			
 			Statement statement = connection.createStatement();
 			ResultSet resultSet = null;
@@ -95,7 +70,7 @@ public class Products implements DatabaseInterface {
 			
 			Statement statement = connection.createStatement();
 			statement.executeQuery(
-			"INSERT INTO " + tableName + "(name) VALUES('"+ name +"')");
+			"INSERT INTO " + tableName + "(name, description) VALUES('"+ name +"', 'null' )");
 			statement.execute( "SHUTDOWN" );
 			statement.close();
 			connection.close();
@@ -135,4 +110,38 @@ public class Products implements DatabaseInterface {
 		}		
 	}
 	
+	
+	@Override
+	public void restoreOldVersion(String[] line, String operation)
+	{
+		System.out.println("restoreOldVersion");
+		
+		try {
+			Class.forName("org.hsqldb.jdbcDriver");
+			
+			Connection connection = DriverManager.getConnection("jdbc:hsqldb:file:data/factory.db", "sa", "");
+			
+			Statement statement = connection.createStatement();
+			
+			String query = "";
+			if(operation == "add")
+				query = "DELETE FROM " + tableName +"  WHERE ID = '" + line[0] + "'";
+			
+			if(operation == "del")
+				query = "INSERT INTO " + tableName +" VALUES(" + line[0] + ",'" + line[1] + "','" + line[2] + "')";
+			
+			statement.executeQuery( query);			
+			
+			statement.execute( "SHUTDOWN" );
+			statement.close();
+			connection.close();
+			
+		} catch (ClassNotFoundException e) {
+			System.out.println("Wyst¹pi³ nastepuj¹cy b³¹d z baza danych: ");
+			e.printStackTrace();
+		} catch (SQLException e) {
+			System.out.println("Wyst¹pi³ nastepuj¹cy b³¹d z zapytaniem SQL: ");
+			e.printStackTrace();
+		}		
+	}
 }
