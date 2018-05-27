@@ -20,9 +20,13 @@ public class GUI_database {
 	private DefaultTableModel model;	
 	AddFrame addframe = new AddFrame(this);
 	
+	////
 	private static String[] className = {"Users","Products", "Privileges"};
-	private String[][] dataNoSorted;
+	////
+	private String[][] dataNoSorted;	
+	////
 	private String[][] dataSortedAsc;
+	////
 	private String[] columnHeaders;
 	private JTable table;
 	JButton btnUndo = new JButton("Undo");
@@ -35,13 +39,13 @@ public class GUI_database {
     Caretaker caretaker = new Caretaker();
     private int updateCounter = 0;
     
-    
+    ////
 	public static String[] tableColumnHeaders() {
 		
 		String[] userColumnHeaders = {"Id","Name", "Description"};
 		return userColumnHeaders;	
 	}
-	
+	////
 	public void selectTable(String tableName)
 	{
         currentTable = tableName;
@@ -71,6 +75,7 @@ public class GUI_database {
 		caretaker.addMemento(originator.save());
 		btnUndo.setText("Undo (" + updateCounter + ")");
 	}
+	
 	public void noAddItem()
 	{
 		addframe.setVisible(false);
@@ -82,7 +87,7 @@ public class GUI_database {
 		table.getColumnModel().getColumn(1).setPreferredWidth(99);
 		table.getColumnModel().getColumn(2).setPreferredWidth(109);
 	}
-	
+	////
 	public void getTable()
 	{
 		dataNoSorted = database.sortedList(0);
@@ -148,7 +153,7 @@ public class GUI_database {
 			public void actionPerformed(ActionEvent arg0) {					
 				addframe.setVisible(true);				
 			}
-		});		
+		});
 		
 		btnDel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -172,9 +177,9 @@ public class GUI_database {
 					caretaker.addMemento(originator.save());
 					
 					btnUndo.setText("Undo (" + updateCounter + ")");
-				}				
+				}
 			}
-		});		
+		});
 		
 		btnGet.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
